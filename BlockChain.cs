@@ -34,5 +34,14 @@ namespace FirstBlockChain
         { 
             return Chain[Chain.Count - 1];
         }
+
+        public void AddBlock(Block block)
+        {
+            Block latestBlock = GetLatestBlock();
+            block.Index = latestBlock.Index + 1;
+            block.PreviousHash = latestBlock.Hash;
+            block.Hash = latestBlock.CalculatedHash();
+            Chain.Add(block);
+        }
     }
 }
