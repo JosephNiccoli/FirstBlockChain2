@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace FirstBlockChain
 {
     public class BlockChain
@@ -12,7 +13,7 @@ namespace FirstBlockChain
         public BlockChain()
         {
             InitializeChain();
-            AddGenesisBlock(); 
+            AddGenesisBlock();
         }
 
         public void InitializeChain()
@@ -24,14 +25,14 @@ namespace FirstBlockChain
         {
             return new Block(DateTime.Now, null, "{}");
         }
-        
+
         public void AddGenesisBlock()
         {
             Chain.Add(CreateGenesisBlock());
         }
 
         public Block GetLatestBlock()
-        { 
+        {
             return Chain[Chain.Count - 1];
         }
 
@@ -43,5 +44,7 @@ namespace FirstBlockChain
             block.Hash = latestBlock.CalculatedHash();
             Chain.Add(block);
         }
+
+
     }
 }
