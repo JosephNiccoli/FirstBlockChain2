@@ -9,7 +9,6 @@ namespace FirstBlockChain
     public class BlockChain
     {
         public IList<Block> Chain { set; get; }
-
         public BlockChain()
         {
             InitializeChain();
@@ -45,6 +44,27 @@ namespace FirstBlockChain
             Chain.Add(block);
         }
 
+        /*The IsValid method will check two things.
+           Each block’s hash to see if the block is changed
+           Previous block’s hash to see if the block is changed and recalculated*/
+        public bool IsValid()
+        {
+            for (int i = 1; i < Chain.Count; i++)
+            {
+                Block currentBlock = Chain[i];
+                Block previousBlock = Chain[i - 1];
+
+                if (currentBlock.Hash != currentBlock.CalculatedHash())
+                {
+                    return false;
+                }
+                if (currentBlock.PreviousHash != previousBlock.Hash)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
     }
 }
