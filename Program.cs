@@ -14,11 +14,17 @@ namespace FirstBlockChain
     {
         static void Main(string[] args)
         {
+            var startTime = DateTime.Now;
             BlockChain ghostCoin = new BlockChain();
 
             ghostCoin.AddBlock(new Block(DateTime.Now, null, "{sender:Joe,receiver:MaHesh,amount:10}"));
             ghostCoin.AddBlock(new Block(DateTime.Now, null, "{sender:MaHesh,receiver:Joe,amount:5}"));
             ghostCoin.AddBlock(new Block(DateTime.Now, null, "{sender:Mahesh,receiver:Joe,amount:5}"));
+
+            var endTime = DateTime.Now;
+
+            Console.WriteLine($"Duration:{endTime - startTime}");
+
             Console.WriteLine(JsonConvert.SerializeObject(ghostCoin, Formatting.Indented));
 
 

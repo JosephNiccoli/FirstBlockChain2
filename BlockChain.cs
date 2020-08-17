@@ -9,6 +9,8 @@ namespace FirstBlockChain
     public class BlockChain
     {
         public IList<Block> Chain { set; get; }
+        public int Difficulty { get; set; } = 2;
+
         public BlockChain()
         {
             InitializeChain();
@@ -40,6 +42,7 @@ namespace FirstBlockChain
             Block latestBlock = GetLatestBlock();
             block.Index = latestBlock.Index + 1;
             block.PreviousHash = latestBlock.Hash;
+            block.Mine(this.Difficulty);
             block.Hash = latestBlock.CalculatedHash();
             Chain.Add(block);
         }
