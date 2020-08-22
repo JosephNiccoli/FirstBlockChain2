@@ -8,7 +8,8 @@ namespace FirstBlockChain
 {
     public class BlockChain
     {
-        IList<Transaction> PendingTransactions = new List<Transaction>();
+        public IList<Transaction> PendingTransactions = new List<Transaction>();
+
         public IList<Block> Chain { set; get; }
         public int Difficulty { get; set; } = 2;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FirstBlockChain.P2P;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -12,75 +13,69 @@ namespace FirstBlockChain
 {
     public class Program
     {
+        public static int Port = 0;
+        public static P2PServer Server = null;
+        public static P2PClient Client = new P2PClient();
+        public static BlockChain GhostCoin = new BlockChain();
+        public static string name = "Unknown";
         static void Main(string[] args)
         {
-            var startTime = DateTime.Now;
-            BlockChain ghostCoin = new BlockChain();
-            ghostCoin.CreateTransaction(new Transaction("Joe","MaHesh",3));
-            #region
+            GhostCoin.InitializeChain();
 
-            //ghostCoin.AddBlock(new Block(DateTime.Now, null, FromAddress:Joe,toAddress:MaHesh,amount:10));
-            //ghostCoin.AddBlock(new Block(DateTime.Now, null, "{sender:MaHesh,receiver:Joe,amount:5}"));
-            //ghostCoin.AddBlock(new Block(DateTime.Now, null, "{sender:Mahesh,receiver:Joe,amount:5}"));
+            if (args.Length >= 1)
+                Port = int.Parse(args[0]);
+            if (args.Length >= 2)
+                name = args[1];
 
-            //var endTime = DateTime.Now;
-
-            //Console.WriteLine($"Duration:{endTime - startTime}");
-
-            //Console.WriteLine(JsonConvert.SerializeObject(ghostCoin, Formatting.Indented));
-
-
-            ///*One of the advantages of using blockchain is data security.Data security means that tampering with the old data and altering the method 
-            //  of securing new data is prevented by both the cryptographic method and the non-centralized storage of the data itself.
-            //  However, blockchain is just a data structure in which data can be easily changed like this.*/
-
-            //ghostCoin.Chain[1].Transactions = "{sender:Joe,receiver:MaHesh,amount:1000}";
-
-
-            //Console.WriteLine($"Is Chain Valid: {ghostCoin.IsValid()}");
-
-            //Console.WriteLine($"Update amount to 1000");
-            //ghostCoin.Chain[1].Transactions = "{sender:Joe,receiver:MaHesh,amount:1000}";
-
-            //Console.WriteLine($"Is Chain Valid: {ghostCoin.IsValid()}");
-
-            ////How about the case when the attacker recalculates the hash of the tampered block?
-            ////The Validation result will still be false because the validation not only looks at the current block but also at the link to the previous block.
-            //ghostCoin.Chain[1].Hash = ghostCoin.Chain[1].CalculatedHash();
-
-            ////Now, what about the case when an attacker recalculates hashes of all the current block and the following blocks?
-            ////After all the Blocks are recalculated, the verification is passed. However, this is only passed on one node because Blockchain is a decentralized system. Tampering with one node could be easy but tampering with all the nodes in the system is impossible.
-
-            //Console.WriteLine($"Update the entire chain");
-            //ghostCoin.Chain[2].PreviousHash = ghostCoin.Chain[1].Hash;
-            //ghostCoin.Chain[2].Hash = ghostCoin.Chain[2].CalculatedHash();
-            //ghostCoin.Chain[3].PreviousHash = ghostCoin.Chain[2].Hash;
-            //ghostCoin.Chain[3].Hash = ghostCoin.Chain[3].CalculatedHash();
-            #endregion
-
-
-            ghostCoin.ProcessPendingTransactions("bill");
-            Console.WriteLine(JsonConvert.SerializeObject(ghostCoin, Formatting.Indented));
-
-            ghostCoin.CreateTransaction(new Transaction("Joe", "MaHesh", 1));
-            ghostCoin.CreateTransaction(new Transaction("Joe", "MaHesh", 10));
-            ghostCoin.CreateTransaction(new Transaction("MaHesh", "Joe", 2));
-            ghostCoin.ProcessPendingTransactions("bill");
-
-            var endTime = DateTime.Now;
-
-            Console.WriteLine($"Duration: {endTime - startTime}");
+            if (Port > 0)
+            {
+                Server = new P2PServer();
+                Server.Start();
+            }
+            if (name != "Unkown")
+            {
+                Console.WriteLine($"Current user is {name}");
+            }
 
             Console.WriteLine("=========================");
-            Console.WriteLine($"Henry' balance: {ghostCoin.GetBalance("joe")}");
-            Console.WriteLine($"MaHesh' balance: {ghostCoin.GetBalance("MaHesh")}");
-            Console.WriteLine($"Bill' balance: {ghostCoin.GetBalance("Bill")}");
-
+            Console.WriteLine("1. Connect to a server");
+            Console.WriteLine("2. Add a transaction");
+            Console.WriteLine("3. Display Blockchain");
+            Console.WriteLine("4. Exit");
             Console.WriteLine("=========================");
-            Console.WriteLine($"ghostCoin");
-            Console.WriteLine(JsonConvert.SerializeObject(ghostCoin, Formatting.Indented));
 
-            Console.ReadKey();
+            int selection = 0;
+            while (selection != 4)
+            {
+                switch (selection)
+                {
+                    case 1:
+                        Console.WriteLine("Please enter the server URL");
+                        string serverURL = Console.ReadLine();
+                        Client.Connect($"{serverURL}/Blockchain");
+                        break;
+                    case 2:
+                        Console.WriteLine("Please enter the receiver name");
+                        string receiverName = Console.ReadLine();
+                        Console.WriteLine("Please enter the amount");
+                        string amount = Console.ReadLine();
+                        GhostCoin.CreateTransaction(new Transaction(name, receiverName, int.Parse(amount)));
+                        GhostCoin.ProcessPendingTransactions(name);
+                        Client.Broadcast(JsonConvert.SerializeObject(GhostCoin));
+                        break;
+                    case 3:
+                        Console.WriteLine("Blockchain");
+                        Console.WriteLine(JsonConvert.SerializeObject(GhostCoin, Formatting.Indented));
+                        break;
+
+                }
+
+                Console.WriteLine("Please select an action");
+                string action = Console.ReadLine();
+                selection = int.Parse(action);
+            }
+
+            Client.Close();
         }
     }
 }

@@ -38,13 +38,13 @@ namespace FirstBlockChain.P2P
                     newTransactions.AddRange(newChain.PendingTransactions);
                     newTransactions.AddRange(Program.GhostCoin.PendingTransactions);
 
-                    newChain.pendingTransactions = newTransactions;
-                    InvalidProgramException.GhostCoin = newChain;
+                    newChain.PendingTransactions = newTransactions;
+                    Program.GhostCoin = newChain;
                 }
 
                 if (!chainSynched)
                 {
-                    SendCompletedEventHandler(JsonConvert.SeralizedObject(InvalidProgramException.GhostCoin));
+                    Send(JsonConvert.SerializeObject(Program.GhostCoin));
                     chainSynched = true;
                 }
             }
