@@ -38,7 +38,8 @@ namespace FirstBlockChain.P2P
                     newTransactions.AddRange(newChain.PendingTransactions);
                     newTransactions.AddRange(Program.GhostCoin.PendingTransactions);
 
-                    newChain.PendingTransactions = newTransactions;
+                    newChain.PendingTransactions
+                        = newTransactions;
                     Program.GhostCoin = newChain;
                 }
 
